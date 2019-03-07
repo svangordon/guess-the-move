@@ -43,5 +43,5 @@ class AnalysisVisitor(chess.pgn.BaseVisitor):
 
 if __name__ == "__main__":
     app = Ingestor("./data/opera_game.pgn")
-    vis = MyVisitor(app.game)
+    vis = AnalysisVisitor(app.game)
     app.game.accept(vis)
