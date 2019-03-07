@@ -6,14 +6,18 @@ import chess
 import chess.pgn
 import chess.engine
 
+import guesser
+from ingestor import Ingestor
+
 class TestGameImport(unittest.TestCase):
     """Test importing a game."""
 
     def setUp(self):
         from ingestor import Ingestor
         pgn_path = "./data/opera_game.pgn"
-        self.pgn_path = pgn_path
-        self.ingestor = Ingestor(self.pgn_path)
+        # self.pgn_path = pgn_path
+        with open(pgn_path) as fp:
+            self.ingestor = Ingestor(fp)
         self.maxDiff = None
 
     def test_load_pgn(self):
@@ -62,14 +66,41 @@ class TestGameAnalysis(unittest.TestCase):
     
     def test_best_moves(self):
         """Test that we can find the N best moves."""
-        engine = chess.engine.SimpleEngine.popen_uci("stockfish", debug=True)
+        self.engine = chess.engine.SimpleEngine.popen_uci("stockfish", debug=True)
         board = chess.Board("r2qr1k1/pb2npp1/1pn1p2p/8/3P4/P1PQ1N2/B4PPP/R1B1R1K1 w - - 2 15")
-        analysis = engine.analysis(board, chess.engine.Limit(depth=10), multipv=3)
-
-        self.assertEqual(len(analysis.multipv), 3)       
+        analysis = self.engine.analysis(board, chess.engine.Limit(depth=10), multipv=3)
+        self.assertEqual(len(analysis.multipv), 3)
+        # engine.quit()
 
     def tearDown(self):
         self.engine.quit()
+
+
+class TestGameIngestor(unittest.TestCase):
+
+    def setUp(self):
+        self.fp = open('./data.pgn')
+        # with open('./data.pgn') as fp:
+        #     self.ingestor = Ingestor(fp)
+    
+    def test_create_ingestor(self):
+        ingestor = Ingestor(self.fp)
+        self.assertEqual(str(type(ingestor)), "<class 'ingestor.Ingestor'>")
+    
+    def test_no_player_set(self):
+        ingestor = Ingestor(self.fp)
+        self.assertIsNone(ingestor.user_player)
+
+    # def test_set_player(self):
+    #     """Test that we can set the ingestor to run on the winner."""
+    #     ingestor = Ingestor(self.fp)
+    #     ingestor.set_user_player(guesser.WINNER)
+    #     self.assertEquals(guesser.WINNER, chess.WHITE)
+
+    def tearDown(self):
+        self.fp.close()
+    # def test_game_visitor(self):
+    #     self.ingestor.run()
 
 
 
