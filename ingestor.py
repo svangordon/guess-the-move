@@ -11,7 +11,7 @@ class Ingestor():
         self.pgn_path = pgn_path
         self.game = chess.pgn.read_game(open(pgn_path))
     
-        
+
 
 class MyVisitor(chess.pgn.BaseVisitor):
 
@@ -42,6 +42,6 @@ class MyVisitor(chess.pgn.BaseVisitor):
 
 
 if __name__ == "__main__":
-    app = Ingestor('./opera_game.pgn')
+    app = Ingestor('./data/opera_game.pgn')
     vis = MyVisitor(app.game)
     app.game.accept(vis)
