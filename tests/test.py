@@ -4,6 +4,7 @@ import unittest
 
 import chess
 import chess.pgn
+import chess.engine
 
 class TestGameImport(unittest.TestCase):
     """Test importing a game."""
@@ -44,6 +45,31 @@ class TestGameImport(unittest.TestCase):
                 temp_line = temp_handle.readline()
                 with self.subTest(line_number=line_number, output_line=output_line, temp_line=temp_line):
                     self.assertEqual(output_line, temp_line)
+                line_number += 1
+
+class TestGameAnalysis(unittest.TestCase):
+
+    def setUp(self):
+        # self.engine = chess.engine.SimpleEngine.popen_uci("stockfish")
+        self.engine = chess.engine.SimpleEngine.popen_uci("stockfish", debug=True)
+
+
+    def test_simple_analysis(self):
+        """Test that we can successfully analyze a basic position."""
+        board = chess.Board("r1bqkbnr/p1pp1ppp/1pn5/4p3/2B1P3/5Q2/PPPP1PPP/RNB1K1NR w KQkq - 2 4")
+        info = self.engine.analyse(board, chess.engine.Limit(depth=20))
+        self.assertEqual(str(info['score']), '#+1')
+    
+    def test_best_moves(self):
+        """Test that we can find the N best moves."""
+        engine = chess.engine.SimpleEngine.popen_uci("stockfish", debug=True)
+        board = chess.Board("r2qr1k1/pb2npp1/1pn1p2p/8/3P4/P1PQ1N2/B4PPP/R1B1R1K1 w - - 2 15")
+        analysis = engine.analysis(board, chess.engine.Limit(depth=10), multipv=3)
+
+        self.assertEqual(len(analysis.multipv), 3)       
+
+    def tearDown(self):
+        self.engine.quit()
 
 
 
