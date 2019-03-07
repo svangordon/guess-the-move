@@ -1,0 +1,38 @@
+[Event "New Orleans"]
+[Site "New Orleans, LA USA"]
+[Date "1849.??.??"]
+[EventDate "1849.??.??"]
+[Round "?"]
+[Result "0-1"]
+[White "James McConnell"]
+[Black "Paul Morphy"]
+[ECO "C38"]
+[WhiteElo "?"]
+[BlackElo "?"]
+[PlyCount "46"]
+
+1.e4 {Notes by Stockfish 8 v270317 (minimum 30s/ply)} e5 2.f4
+exf4 3.Nf3 g5 4.Bc4 Bg7 5.d3 {better is 5.Nc3 h6 6.d4 Nc6 7.h4
+d6 8.Qd3 g4 9.Ng1 f3 10.gxf3 = -0.31 (33 ply)} h6 {=/+ -1.02
+(28 ply) after 5...Nc6 6.h4 h6 7.Nc3 d6 8.Qe2 Be6 9.Bb5 a6
+10.Bxc6+ } 6.O-O {? 6.h4 d6 7.Nc3 Nc6 8.Qe2 Be6 9.Bb5 a6
+10.Bxc6+ bxc6 =/+ -0.94 (26 ply)} Nf6 {? 6...d6 7.Nc3 Nc6
+8.Bd2 Na5 9.Bb5+ c6 10.b4 cxb5 -/+ -1.70 (28 ply)} 7.c3 {?
+7.e5 Ng8 8.g3 d5 9.exd6 Qxd6 10.gxf4 Nc6 11.Nc3 Bh3 =/+ -0.52
+(26 ply)} b5 {? 7...O-O 8.e5 Ne8 9.d4 d6 10.b3 Nc6 11.Ba3 g4
+12.Nfd2 -/+ -1.73 (29 ply)} 8.Bxb5 {= -0.08 (30 ply)} c6 9.Bc4
+d5 10.exd5 cxd5 11.Qe2+ {? 11.Bb5+ Kf8 12.Nbd2 Qb6+ 13.Nd4 Ng4
+14.Nf3 Ne5 15.Nxe5 = -0.30 (30 ply)} Be6 {=/+ -1.27 (34 ply)}
+12.Bb3 {? 12.Bb5+ Nbd7 13.Nd4 Qb6 14.Nd2 O-O 15.a4 a6 16.Bc6
+Rac8 =/+ -0.81 (31 ply)} O-O {-/+ -1.95 (28 ply)} 13.d4 Ne4 {?
+13...Re8 14.Re1 Nc6 15.Qf1 Qb6 16.Nbd2 Bd7 17.Kh1 Rxe1 -/+
+-1.92 (30 ply)} 14.Bc2 {? 14.Nbd2 Nf6 15.Qd3 Re8 16.Re1 Nbd7
+17.Ba4 Rc8 18.b3 Nh5 =/+ -1.00 (30 ply)} f5 {-/+ -1.76 (28
+ply) after 14...Re8 15.Nbd2 Bc8 16.Re1 Ba6 17.Bd3 Re6 18.Qf1
+Bb7 } 15.Nbd2 Nc6 16.c4 {? 16.Nb3 Bf7 17.Qa6 Qd6 18.Bd2 Rab8
+19.Rae1 Rfe8 20.Bd3 =/+ -1.29 (22 ply)} Bxd4+ {-+ -4.77 (29
+ply) after 16...g4 17.c5 gxf3 18.Nxf3 Nxd4 19.Nxd4 Bxd4+
+20.Kh1 } 17.Nxd4 {? 17.Kh1 Qe8 18.Qd1 Nf2+ 19.Rxf2 Bxf2 20.Ba4
+dxc4 21.Qf1 -+ -3.21 (32 ply)} Nxd4 {-+ -6.57 (31 ply)} 18.Qd3
+Qb6 19.Kh1 Nxc2 20.Qxc2 Nf2+ 21.Kg1 Nh3+ 22.Kh1 Qg1+ 23.Rxg1
+Nf2# 0-1
