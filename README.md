@@ -1,0 +1,1 @@
+If you can't connect to postgres, uninstall the conda version of psycopg2 and reinstall it with pip.

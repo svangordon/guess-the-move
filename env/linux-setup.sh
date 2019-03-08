@@ -43,6 +43,9 @@ echo -e "\nInstalling Linux packages\n"
 # Install tools for development and assessments:
 apt-get install -y git unzip sqlite3 libxml2-dev libxslt1-dev libffi-dev libssl-dev wget
 
+# Install the stockfish engine
+apt-get install -y stockfish
+
 # Install postgres:
 apt-get install -y postgresql postgresql-contrib postgresql-plpython postgresql-server-dev-10 postgresql-client
 

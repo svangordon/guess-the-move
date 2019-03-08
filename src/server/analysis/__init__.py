@@ -10,9 +10,10 @@ class Analyzer:
     def __init__(self, pgn_handle):
         # self.pgn_path = pgn_path
         self.game = chess.pgn.read_game(pgn_handle)
+        self.engine = None
+        pgn_handle.close()
 
         self.set_player_color()
-        self.engine = chess.engine.SimpleEngine.popen_uci("stockfish")
 
         # self.user_player = user_player
         self.analysis = []
@@ -29,9 +30,15 @@ class Analyzer:
             )
 
     def analyze_game(self):
+        self.engine = chess.engine.SimpleEngine.popen_uci("stockfish")
+
         self.game.accept(AnalysisVisitor(self.game, self))
-        self.engine.quit()
+        # self.engine.quit()
+
         # self.analysis = analysis
+
+    def close(self):
+        self.engine.quit()
 
 
 class AnalysisVisitor(chess.pgn.BaseVisitor):
@@ -50,10 +57,10 @@ class AnalysisVisitor(chess.pgn.BaseVisitor):
 
     def end_game(self):
         self.parent.analysis = [result.multipv for result in self.parent.analysis]
-        pass
+        self.parent.engine.quit()
 
 
 if __name__ == "__main__":
     app = Analyzer("./data/opera_game.pgn")
-    vis = AnalysisVisitor(app.game)
+    vis = AnalysisVisitor(app.game, app)
     app.game.accept(vis)
