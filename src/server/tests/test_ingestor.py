@@ -16,22 +16,14 @@ def analyzer(pgn_path=test_game):
 
     anal = analysis.Analyzer(open(test_game))
     return anal
-    # yield anal
-    # anal.close()
 
 
 class TestAnalyzer(object):
     def test_setup(self, analyzer):
-        # analyzer = self.get_analyzer()
         assert isinstance(analyzer, analysis.Analyzer)
 
     def test_game_load(self, analyzer):
-        #     analyzer = self.get_analyzer()
         assert isinstance(analyzer.game, chess.pgn.Game)
-
-        # global test_game
-        # assert analyzer.player_color == color
-        # test_game = mcconnell_morphy
 
     @pytest.mark.parametrize(
         "game,color", [(opera_game, chess.WHITE), (mcconnell_morphy, chess.BLACK)]
