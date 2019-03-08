@@ -39,14 +39,14 @@ Vagrant.configure(2) do |config|
   config.vm.synced_folder "../src", "/home/vagrant/src"
 
   # Include a .bashrc file
-  config.vm.provision "file", source: "./test-file.sh", destination: "test-file.sh"
+  # config.vm.provision "file", source: "./test-file.sh", destination: "test-file.sh"
 
   # Enable provisioning with a shell script. Additional provisioners such as
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
   config.vm.provision :shell, path: "linux-setup.sh"
   config.vm.provision :shell, path: "vagrant-setup.sh"
-  config.vm.provision :shell, path: "client-setup.sh"
+  # config.vm.provision :shell, path: "client-setup.sh"
 
   # Set the amount of RAM the virtual machine has access to and keep its
   # clock in sync with host machine clock

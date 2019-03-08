@@ -46,11 +46,29 @@ apt-get install -y git unzip sqlite3 libxml2-dev libxslt1-dev libffi-dev libssl-
 # Install postgres:
 apt-get install -y postgresql postgresql-contrib postgresql-plpython postgresql-server-dev-10 postgresql-client
 
-#install Python 3.6 packages:   
-echo -e "\nInstalling Python 3.6 packages"
-apt-get install -y python3 python3-dev python3-virtualenv virtualenv
-apt-get install -y python3-pip
-pip3 install psycopg2 psycopg2-binary ipython notebook python-twitter
+echo -e "\nInstalling conda"
+# Silent mode install directions come from: https://docs.anaconda.com/anaconda/install/silent-mode/
+cd /tmp
+runuser -l vagrant -c 'wget -q https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /home/vagrant/miniconda.sh'
+runuser -l vagrant -c 'bash /home/vagrant/miniconda.sh -b -p /home/vagrant/miniconda'
+runuser -l vagrant -c 'export PATH="$/home/vagrant/miniconda/bin:$PATH"'
+
+# Add miniconda to the path
+echo '# miniconda path' >> /home/vagrant/.bashrc 
+echo 'export PATH="$HOME/miniconda/bin:$PATH"' >> /home/vagrant/.bashrc 
+
+# Create environment from requirements.yml
+cd /home/vagrant/src/server
+
+# runuser -l vagrant -c 'conda env create -f /home/vagrant/src/server/environment.yml'
+echo 'source activate chess' >> /home/vagrant/.bashrc
+
+# #install Python 3.6 packages:   
+# echo -e "\nInstalling Python 3.6 packages"
+# conda create -n chess ipython pip
+# apt-get install -y python3 python3-dev python3-virtualenv virtualenv
+# apt-get install -y python3-pip
+# pip3 install psycopg2 psycopg2-binary ipython notebook python-twitter
 
 # Note: the following "upgrade pip" command is explicitly being avoided for
 # two reasons:
@@ -60,9 +78,9 @@ pip3 install psycopg2 psycopg2-binary ipython notebook python-twitter
 # from inside a virtualenv (see https://github.com/pypa/pip/issues/5221 ).
 #pip3 install -U pip3
 
-# Set default version for Python in envs to 3.6
-# Note: this is independent from Python 3 defaulting to 3.6 in Ubuntu 18.04 LTS
-echo export VIRTUALENV_PYTHON=/usr/bin/python3.6 > /etc/profile.d/virtualenv_python.sh
+# # Set default version for Python in envs to 3.6
+# # Note: this is independent from Python 3 defaulting to 3.6 in Ubuntu 18.04 LTS
+# echo export VIRTUALENV_PYTHON=/usr/bin/python3.6 > /etc/profile.d/virtualenv_python.sh
 
 echo "*************************************"
 echo "Setup complete. No errors encountered"
