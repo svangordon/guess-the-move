@@ -24,26 +24,53 @@ class User(db.Model):
     def __repr__(self):
         return f"<User id={self.public_id} email={self.email}>"
 
-    def check_duplicate_email(self):
-        duplicate_email = User.query.filter_by(email=self.email).first()
-        return duplicate_email
+    @property
+    def duplicate_email(self):
+        q = self.query.filter(User.email == self.email)
+        return db.session.query(q.exists()).first()[0]
 
     @property
-    def unique(self):
-        duplicate_email = User.query.filter_by(email=self.email).first()
-        duplicate_username = self.query.filter_by(username=self.username).first()
-        if duplicate_email or duplicate_username:
-            return False
-        return True
+    def duplicate_username(self):
+        q = self.query.filter(User.username == self.username)
+        return db.session.query(q.exists()).first()[0]
+
+    @property
+    def exists(self):
+        """Check to see if a user is already registered in the database."""
+        # duplicate_email = User.query.filter_by(email=self.email).first()
+        # duplicate_username = self.query.filter_by(username=self.username).first()
+        if self.duplicate_email or self.duplicate_username:
+            return True
+        return False
+
+    # @property
+    # def duplicate_email(self):
+    #     return User.query()
+    #     return User.query.filter_by(email=self.email).first()
+
+    # @property
+    # def duplicate_username(self):
+    #     print(type(self))
+    #     print(dir(self))
+    #     return self.query.filter_by(username=self.username).first()
 
     def create(self):
+        """Add the user to the db."""
         # # Check username to see if its unique
-        if not self.unique:
-            return False
+        if self.exists:
+            raise ValueError("Trying to add duplicate user.")
 
         db.session.add(self)
         db.session.commit()
         return True
+
+    # @classmethod
+    # def get(cls, **kwargs):
+    #     cls.query.filter_by(**kwargs).first()
+
+    @classmethod
+    def get(cls, **kwargs):
+        return cls.query.filter_by(**kwargs).first()
 
     @property
     def password(self):

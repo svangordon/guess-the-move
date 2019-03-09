@@ -12,9 +12,9 @@ from app import app_db
 
 @pytest.fixture
 def client():
-    # db_client = app_db.DbAdmin("test")
-    # db_client.drop_db()
-    # db_client.create_db()
+    db_client = app_db.DbAdmin("test")
+    db_client.drop_db()
+    db_client.create_db()
 
     _app = Flask(__name__)
     models.db.init_app(_app)
@@ -25,8 +25,8 @@ def client():
     # db_client.init_db()
     # app = create_app("test")
 
-    _app = Flask(__name__)
-    models.db.init_app(_app)
+    # _app = Flask(__name__)
+    # models.db.init_app(_app)
     with _app.app_context():
         models.db.drop_all()
 
@@ -34,7 +34,7 @@ def client():
 
     # yield db_client
 
-    # db_client.drop_db()
+    db_client.drop_db()
 
 
 # @pytest.fixture
@@ -56,10 +56,13 @@ def test_hash_password(username, email, password):
 def test_duplicate(client):
     user = models.User(username="claude", email="asdf@asdf.com")
     with client.app_context():
-        assert user.unique is True
-        assert user.create() is True
-        assert user.unique is False
-        assert user.create() is False
+        assert user.duplicate_email is False
+        assert user.duplicate_username is False
+        assert user.exists is False
+        user.create()
+        assert user.exists is True
+        with pytest.raises(ValueError):
+            user.create()
 
 
 @pytest.mark.parametrize(
@@ -69,4 +72,14 @@ def test_create_user(client, username, email, password):
     with client.app_context():
         user = models.User(username=username, email=email, password=password)
         user.create()
+        # assert user.get(username=username).username == user.username
+        user.exists is True
         assert models.User.get(username=username).username == user.username
+        assert models.User.get(email=email).email == user.email
+
+
+@pytest.mark.parametrize(
+    "username,email,password", [("claude", "asdf@asdf.com", "my_passwrd")]
+)
+def test_login_user(client, username, email, password):
+    pass
