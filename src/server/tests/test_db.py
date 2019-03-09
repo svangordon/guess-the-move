@@ -1,7 +1,7 @@
 import os
 import tempfile
 
-from flask import Flask
+from flask import Flask, jsonify
 import pytest
 
 from app import create_app, models
@@ -82,4 +82,12 @@ def test_create_user(client, username, email, password):
     "username,email,password", [("claude", "asdf@asdf.com", "my_passwrd")]
 )
 def test_login_user(client, username, email, password):
-    pass
+    with client.app_context():
+        user = models.User(username=username, email=email, password=password)
+        with pytest.raises(ValueError):
+            user.login()
+        # assert user.login()["error"] == "user does not exist"
+        user.create()
+        result = user.login()
+        assert "error" not in result
+        # assert "token" in result

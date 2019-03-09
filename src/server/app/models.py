@@ -1,6 +1,7 @@
 import time
 from datetime import datetime
 
+# from flask import jsonify
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
 import werkzeug.security as ws
@@ -43,17 +44,6 @@ class User(db.Model):
             return True
         return False
 
-    # @property
-    # def duplicate_email(self):
-    #     return User.query()
-    #     return User.query.filter_by(email=self.email).first()
-
-    # @property
-    # def duplicate_username(self):
-    #     print(type(self))
-    #     print(dir(self))
-    #     return self.query.filter_by(username=self.username).first()
-
     def create(self):
         """Add the user to the db."""
         # # Check username to see if its unique
@@ -64,9 +54,16 @@ class User(db.Model):
         db.session.commit()
         return True
 
-    # @classmethod
-    # def get(cls, **kwargs):
-    #     cls.query.filter_by(**kwargs).first()
+    def login(self):
+        if not self.exists:
+            raise ValueError("User does not exist.")
+        #     return jsonify({"error": "user does not exist"})
+
+        auth_user = (
+            User.get(username=self.username)
+            if self.username
+            else User.get(email=self.email)
+        )
 
     @classmethod
     def get(cls, **kwargs):
