@@ -1,8 +1,9 @@
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 
-# from flask import jsonify
+from flask import current_app
 from flask_sqlalchemy import SQLAlchemy
+import jwt
 from sqlalchemy.sql import func
 import werkzeug.security as ws
 import app
@@ -50,6 +51,8 @@ class User(db.Model):
         if self.exists:
             raise ValueError("Trying to add duplicate user.")
 
+        print("=============from================", self.password)
+        self.password = self._hashed_password
         db.session.add(self)
         db.session.commit()
         return True
@@ -65,6 +68,25 @@ class User(db.Model):
             else User.get(email=self.email)
         )
 
+        if ws.check_password_hash(auth_user.password, self.password.encode("utf-8")):
+            token = jwt.encode(
+                {
+                    "public_id": auth_user.public_id,
+                    "exp": datetime.utcnow() + timedelta(days=365),
+                },
+                current_app.config["SECRET_KEY"],
+            )
+            return {"token": token.decode("utf-8"), "username": auth_user.username}
+
+        return {
+            "error": "Could not log in.",
+            "they": auth_user.password,
+            "you": self.password.encode("utf-8"),
+            "result": ws.check_password_hash(
+                auth_user.password, self.password.encode("utf-8")
+            ),
+        }
+
     @classmethod
     def get(cls, **kwargs):
         return cls.query.filter_by(**kwargs).first()
@@ -75,9 +97,14 @@ class User(db.Model):
 
         return self._password
 
+    @property
+    def _hashed_password(self):
+        return ws.generate_password_hash(self._password)
+
     @password.setter
     def password(self, password):
-        self._password = ws.generate_password_hash(password)
+        self._password = password
+        # self._password = ws.generate_password_hash(password)
 
 
 class ChessPlayer(db.Model):

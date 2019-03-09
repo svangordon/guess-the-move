@@ -17,6 +17,7 @@ def client():
     db_client.create_db()
 
     _app = Flask(__name__)
+    _app.config["SECRET_KEY"] = b"a dark and terrible secret"
     models.db.init_app(_app)
     with _app.app_context():
         models.db.create_all()
@@ -47,15 +48,17 @@ def client():
 def test_hash_password(username, email, password):
     user = models.User(username=username, email=email, password=password)
     print("User password, hashed: ", user.password)
-    assert user.password != password
+    assert user._hashed_password != password
 
 
 # @pytest.mark.parametrize(
 #     "username,email,password", [("claude", "asdf@asdf.com", "my_passwrd")]
 # )
 def test_duplicate(client):
-    user = models.User(username="claude", email="asdf@asdf.com")
     with client.app_context():
+        user = models.User(
+            username="claude", email="asdf@asdf.com", password="my_passwrd"
+        )
         assert user.duplicate_email is False
         assert user.duplicate_username is False
         assert user.exists is False
@@ -88,6 +91,7 @@ def test_login_user(client, username, email, password):
             user.login()
         # assert user.login()["error"] == "user does not exist"
         user.create()
+        user = models.User(username=username, email=email, password=password)
         result = user.login()
         assert "error" not in result
-        # assert "token" in result
+        assert "token" in result
