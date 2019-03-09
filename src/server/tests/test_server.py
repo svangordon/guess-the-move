@@ -9,8 +9,10 @@ from app import app_db
 
 @pytest.fixture
 def client():
-    db = app_db.App_Db("test")
-    db.reset()
+    db = app_db.DbAdmin("test")
+    # db.reset()
+    db.drop_db()
+    db.create_db()
     app = create_app("test")
 
     client = app.test_client()

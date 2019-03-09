@@ -25,14 +25,17 @@ class DbAdmin(object):
         return sqlalchemy.create_engine(self.uri)
 
     def create_db(self):
-        sqlalchemy_utils.create_database(self.engine.url)
+        try:
+            sqlalchemy_utils.create_database(self.engine.url)
+        except sqlalchemy.exc.ProgrammingError:
+            print("Cannot drop db: '{}'.".format(self.db_name))
 
     def drop_db(self):
         try:
             sqlalchemy_utils.drop_database(self.engine.url)
-        except sqlalchemy.exc.OperationalError:
+        except sqlalchemy.exc.ProgrammingError:
             # That db doesn't exist, which is fine
-            pass
+            print("Cannot drop db: '{}'.".format(self.db_name))
 
     # def dump_data(self):
     #     for tablename in tablenames:

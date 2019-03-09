@@ -3,6 +3,8 @@ from datetime import datetime
 
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
+import werkzeug.security as ws
+import app
 
 db = SQLAlchemy()
 
@@ -16,11 +18,28 @@ class User(db.Model):
     public_id = db.Column(db.String(50), unique=True)
     username = db.Column(db.String(64), nullable=False, unique=True)
     email = db.Column(db.String(64), nullable=False, unique=True)
-    password = db.Column(db.String(128))
+    _password = db.Column("password", db.String(128))
     created = db.Column(db.DateTime, nullable=False, default=datetime.now)
 
     def __repr__(self):
         return f"<User id={self.public_id} email={self.email}>"
+
+    def create(self):
+        # Check username to see if its unique
+        duplicate_username = User.query.filter_by(username=self.username).first()
+        duplicate_email = User.query.filter_by(email=self.email).first()
+        if duplicate_username or duplicate_email:
+            return app.duplicate_user
+
+    @property
+    def password(self):
+        """Return the user's password. Will have been hashed by the setter."""
+
+        return self._password
+
+    @password.setter
+    def password(self, password):
+        self._password = ws.generate_password_hash(password)
 
 
 class ChessPlayer(db.Model):
@@ -46,9 +65,9 @@ class ChessGame(db.Model):
     site = db.Column(db.String(200), nullable=True, unique=False)
     date = db.Column(db.DateTime)
     round = db.Column(db.Integer)
-    white = db.Column(db.Integer, db.ForeignKey("chessplayer.chessplayer_id"))
-    black = db.Column(db.Integer, db.ForeignKey("chessplayer.chessplayer_id"))
-    result = db.Column()
+    white = db.Column(db.Integer, db.ForeignKey("chessplayers.chessplayer_id"))
+    black = db.Column(db.Integer, db.ForeignKey("chessplayers.chessplayer_id"))
+    result = db.Column(db.Integer, db.ForeignKey("chessresults.chessresult_id"))
 
 
 class ChessResult(db.Model):

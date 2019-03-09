@@ -36,12 +36,10 @@ import jwt
 from app import models
 
 testing_options_dir = "./testing-options"
-
 tablenames = ["users", "chessplayers", "chessgames", "chessresults"]
-
+duplicate_user = 1
 
 def create_app(db_name):
-    # def create_app(config_class=Config):
     mail = None
     template_dir = os.path.abspath("../../client/build")
     static_dir = os.path.abspath("../../client/build/static")
