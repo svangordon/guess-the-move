@@ -1,6 +1,7 @@
 import os
 import tempfile
 
+from flask import Flask
 import pytest
 
 from app import create_app, models
@@ -11,17 +12,29 @@ from app import app_db
 
 @pytest.fixture
 def client():
-    db_client = app_db.DbAdmin("test")
-    db_client.drop_db()
-    db_client.create_db()
-    db_client.init_db()
-    # app = app.create_app("test")
+    # db_client = app_db.DbAdmin("test")
+    # db_client.drop_db()
+    # db_client.create_db()
+
+    _app = Flask(__name__)
+    models.db.init_app(_app)
+    with _app.app_context():
+        models.db.create_all()
+
+    yield _app
+    # db_client.init_db()
+    # app = create_app("test")
+
+    _app = Flask(__name__)
+    models.db.init_app(_app)
+    with _app.app_context():
+        models.db.drop_all()
 
     # client = app.test_client()
 
-    yield db_client
+    # yield db_client
 
-    db_client.drop_db()
+    # db_client.drop_db()
 
 
 # @pytest.fixture
@@ -37,9 +50,23 @@ def test_hash_password(username, email, password):
     assert user.password != password
 
 
+# @pytest.mark.parametrize(
+#     "username,email,password", [("claude", "asdf@asdf.com", "my_passwrd")]
+# )
+def test_duplicate(client):
+    user = models.User(username="claude", email="asdf@asdf.com")
+    with client.app_context():
+        assert user.unique is True
+        assert user.create() is True
+        assert user.unique is False
+        assert user.create() is False
+
+
 @pytest.mark.parametrize(
     "username,email,password", [("claude", "asdf@asdf.com", "my_passwrd")]
 )
 def test_create_user(client, username, email, password):
-    user = models.User(username=username, email=email, password=password)
-    user.create()
+    with client.app_context():
+        user = models.User(username=username, email=email, password=password)
+        user.create()
+        assert models.User.get(username=username).username == user.username

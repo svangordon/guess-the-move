@@ -25,7 +25,7 @@ from flask_restful import  Api, Resource, reqparse
 from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
 import jwt
-from app.model import Student, StudentGroup, Item, Group, GroupNote, StudentItem, StudentTestResult, ReadingLevel, connect_to_db, db, User
+from app.models import Student, StudentGroup, Item, Group, GroupNote, StudentItem, StudentTestResult, ReadingLevel, connect_to_db, db, User
 
 
 # from app import app
