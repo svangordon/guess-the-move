@@ -144,7 +144,7 @@ class ChessGamePlayers(db.Model):
 
     chessgameplayers_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     white_id = db.Column(db.Integer, db.ForeignKey("chessplayers.chessplayer_id"))
-    # black_id = db.Column(db.Integer, db.ForeignKey("chessplayers.chessplayer_id"))
+    black_id = db.Column(db.Integer, db.ForeignKey("chessplayers.chessplayer_id"))
     chessgame_id = db.Column(db.Integer, db.ForeignKey("chessgames.chessgame_id"))
 
     # white = db.relationship("ChessPlayer", foreign_keys=[white_id])
@@ -152,7 +152,7 @@ class ChessGamePlayers(db.Model):
 
     # chessplayers = db.relationship("ChessPlayer")
     white = db.relationship("ChessPlayer", foreign_keys=[white_id])
-    # black = db.relationship("ChessPlayer", foreign_keys=[black_id])
+    black = db.relationship("ChessPlayer", foreign_keys=[black_id])
     # chessplayers = db.relationship("ChessPlayer", foreign_keys=[white_id, black_id])
     chessgames = db.relationship("ChessGame")
     # def create(self):
@@ -200,9 +200,12 @@ class ChessGame(db.Model):
         db.session.add(game_players)
         db.session.commit()
 
-    @classmethod
-    def search(cls, **kwargs):
-        return cls.query.filter_by(**kwargs).all()
+    def get(self):
+        return self.query.filter_by(chessgame_id=self.chessgame_id).first()
+
+    # @classmethod
+    # def search(cls, **kwargs):
+    #     return ChessGamePlayers.query.filter_by(**kwargs).all()
 
 
 class ChessResult(db.Model):

@@ -128,11 +128,13 @@ if True:
                 )
                 game.create(white=player1)
                 # search_results = models.ChessGame.search(
-                #     white=player1.chessplayer_id, black=player2.chessplayer_id
+                #     white_id=player1.chessplayer_id
                 # )
                 # searched_game = search_results[0]
-                # assert searched_game is not None
-                # assert searched_game.pgn == game_pgn
+                searched_game = game.get()
+                assert searched_game is not None
+                assert searched_game.pgn == game_pgn
+                assert searched_game.white == player1
 
                 # print(searched_game.white)
 
