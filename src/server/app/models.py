@@ -5,6 +5,7 @@ from flask import current_app
 from flask_sqlalchemy import SQLAlchemy
 import jwt
 from sqlalchemy.sql import func
+from sqlalchemy.orm import relationship, backref
 import werkzeug.security as ws
 import app
 
@@ -118,9 +119,11 @@ class ChessPlayer(db.Model):
     )  # Some people, like Greco or N.N., might only have one name
     lastname = db.Column(db.String(64), nullable=False)
 
-    chessgameplayers = db.relationship(
-        "ChessGamePlayers", cascade="save-update, merge, delete"
-    )
+    # games = db.relationship("ChessGame", secondary="chess_game_players")
+
+    # chessgameplayers = db.relationship(
+    #     "ChessGamePlayers", cascade="save-update, merge, delete"
+    # )
 
     def create(self):
         db.session.add(self)
@@ -140,21 +143,26 @@ class ChessPlayer(db.Model):
 class ChessGamePlayers(db.Model):
     """Association table to join games and players."""
 
-    __tablename__ = "chessgameplayers"
+    __tablename__ = "chess_game_players"
 
     chessgameplayers_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    white_id = db.Column(db.Integer, db.ForeignKey("chessplayers.chessplayer_id"))
-    black_id = db.Column(db.Integer, db.ForeignKey("chessplayers.chessplayer_id"))
-    chessgame_id = db.Column(db.Integer, db.ForeignKey("chessgames.chessgame_id"))
+    player_id = db.Column(db.Integer, db.ForeignKey("chessplayers.chessplayer_id"))
+    game_id = db.Column(db.Integer, db.ForeignKey("chessgames.chessgame_id"))
 
+    # player = db.relationship(backref=db.backref(""))
+
+    # white_id = db.Column(db.Integer, db.ForeignKey("chessplayers.chessplayer_id"))
+    # black_id = db.Column(db.Integer, db.ForeignKey("chessplayers.chessplayer_id"))
+    # chessgame_id = db.Column(db.Integer, db.ForeignKey("chessgames.chessgame_id"))
+
+    # # white = db.relationship("ChessPlayer", foreign_keys=[white_id])
+    # # black = db.relationship("ChessPlayer", foreign_keys=[black_id])
+
+    # # chessplayers = db.relationship("ChessPlayer")
     # white = db.relationship("ChessPlayer", foreign_keys=[white_id])
     # black = db.relationship("ChessPlayer", foreign_keys=[black_id])
-
-    # chessplayers = db.relationship("ChessPlayer")
-    white = db.relationship("ChessPlayer", foreign_keys=[white_id])
-    black = db.relationship("ChessPlayer", foreign_keys=[black_id])
-    # chessplayers = db.relationship("ChessPlayer", foreign_keys=[white_id, black_id])
-    chessgames = db.relationship("ChessGame")
+    # # chessplayers = db.relationship("ChessPlayer", foreign_keys=[white_id, black_id])
+    # chessgames = db.relationship("ChessGame")
     # def create(self):
     #     db.session.add(self)
     #     db.session.commit()
@@ -183,9 +191,11 @@ class ChessGame(db.Model):
     # result = db.Column(db.Integer, db.ForeignKey("chessresults.chessresult_id"))
     pgn = db.Column(db.String(2048))
 
-    chessgameplayers = db.relationship(
-        "ChessGamePlayers", cascade="save-update, merge, delete"
-    )
+    # players = db.relationship(ChessPlayer, secondary=ChessGamePlayers)
+
+    # chessgameplayers = db.relationship(
+    #     "ChessGamePlayers", cascade="save-update, merge, delete"
+    # )
 
     def create(self, white, black=None):
         # Create the association table
@@ -215,6 +225,32 @@ class ChessResult(db.Model):
 
     chessresult_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     text = db.Column(db.String(10), nullable=False)
+
+
+
+
+# Some simple associative boilerplate we're dropping in
+class Department(db.Model):
+    __tablename__ = "department"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+    employees = relationship("Employee", secondary="department_employee_link")
+
+
+class Employee(db.Model):
+    __tablename__ = "employee"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+    hired_on = db.Column(db.DateTime, default=func.now())
+    departments = relationship(Department, secondary="department_employee_link")
+
+
+class DepartmentEmployeeLink(db.Model):
+    __tablename__ = "department_employee_link"
+    department_id = db.Column(
+        db.Integer, db.ForeignKey("department.id"), primary_key=True
+    )
+    employee_id = db.Column(db.Integer, db.ForeignKey("employee.id"), primary_key=True)
 
 
 # class Student(db.Model):

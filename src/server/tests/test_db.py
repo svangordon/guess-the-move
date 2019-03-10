@@ -2,7 +2,7 @@ import datetime
 import os
 import tempfile
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, g
 import pytest
 
 from app import create_app, models
@@ -107,7 +107,29 @@ class TestChessPlayer:
             assert player.get() is not None
 
 
-if True:
+class TestSimpleAssoc:
+    def test_associative_table(self, client):
+        with client.app_context():
+            print(models.db.session)
+            s = models.db.session
+            IT = models.Department(name="IT")
+            Financial = models.Department(name="Financial")
+            cathy = models.Employee(name="Cathy")
+            marry = models.Employee(name="Marry")
+            john = models.Employee(name="John")
+            cathy.departments.append(Financial)
+            Financial.employees.append(marry)
+            john.departments.append(IT)
+            s.add(IT)
+            s.add(Financial)
+            s.add(cathy)
+            s.add(marry)
+            s.add(john)
+            s.commit()
+            print(cathy.departments[0].name)
+
+
+if False:
 
     class TestChessGame:
         def test_create_game(self, client):
