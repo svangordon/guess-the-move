@@ -118,7 +118,9 @@ class ChessPlayer(db.Model):
     )  # Some people, like Greco or N.N., might only have one name
     lastname = db.Column(db.String(64), nullable=False)
 
-    # chessgameplayers = db.relationship("ChessGamePlayers")
+    chessgameplayers = db.relationship(
+        "ChessGamePlayers", cascade="save-update, merge, delete"
+    )
 
     def create(self):
         db.session.add(self)
@@ -132,7 +134,7 @@ class ChessPlayer(db.Model):
 
     @classmethod
     def search(cls, **kwargs):
-        return self.query.filter_by(**kwargs).all()
+        return cls.query.filter_by(**kwargs).all()
 
 
 class ChessGamePlayers(db.Model):
@@ -141,11 +143,17 @@ class ChessGamePlayers(db.Model):
     __tablename__ = "chessgameplayers"
 
     chessgameplayers_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    white = db.Column(db.Integer, db.ForeignKey("chessplayers.chessplayer_id"))
-    # black = db.Column(db.Integer, db.ForeignKey("chessplayers.chessplayer_id"))
+    white_id = db.Column(db.Integer, db.ForeignKey("chessplayers.chessplayer_id"))
+    # black_id = db.Column(db.Integer, db.ForeignKey("chessplayers.chessplayer_id"))
     chessgame_id = db.Column(db.Integer, db.ForeignKey("chessgames.chessgame_id"))
 
-    chessplayers = db.relationship("ChessPlayer")
+    # white = db.relationship("ChessPlayer", foreign_keys=[white_id])
+    # black = db.relationship("ChessPlayer", foreign_keys=[black_id])
+
+    # chessplayers = db.relationship("ChessPlayer")
+    white = db.relationship("ChessPlayer", foreign_keys=[white_id])
+    # black = db.relationship("ChessPlayer", foreign_keys=[black_id])
+    # chessplayers = db.relationship("ChessPlayer", foreign_keys=[white_id, black_id])
     chessgames = db.relationship("ChessGame")
     # def create(self):
     #     db.session.add(self)
@@ -166,27 +174,30 @@ class ChessGame(db.Model):
     date = db.Column(db.DateTime)
     round = db.Column(db.Integer, nullable=True)
 
-    white_id = db.Column(db.Integer, db.ForeignKey("chessplayer.chessplayer_id"))
-    black_id = db.Column(db.Integer, db.ForeignKey("chessplayer.chessplayer_id"))
+    # white_id = db.Column(db.Integer, db.ForeignKey("chessplayer.chessplayer_id"))
+    # black_id = db.Column(db.Integer, db.ForeignKey("chessplayer.chessplayer_id"))
 
-    white = db.relationship("ChessPlayer", foreign_keys=[white_id])
-    black = db.relationship("ChessPlayer", foreign_keys=[black_id])
+    # white = db.relationship("ChessPlayer", foreign_keys=[white_id])
+    # black = db.relationship("ChessPlayer", foreign_keys=[black_id])
 
     # result = db.Column(db.Integer, db.ForeignKey("chessresults.chessresult_id"))
     pgn = db.Column(db.String(2048))
 
-    chessgameplayers = db.relationship("ChessGamePlayers")
+    chessgameplayers = db.relationship(
+        "ChessGamePlayers", cascade="save-update, merge, delete"
+    )
 
-    def create(self, white, black):
+    def create(self, white, black=None):
         # Create the association table
-        # game_players = ChessGamePlayers(
-        #     white=white.chessplayer_id,
-        #     black=black.chessplayer_id,
-        #     chessgame_id=self.chessgame_id,
-        # )
-        # db.session.add(game_players)
-        # add the chess game
         db.session.add(self)
+        # db.session.commit()
+        game_players = ChessGamePlayers(
+            white_id=white.chessplayer_id,
+            # black_id=black.chessplayer_id,
+            chessgame_id=self.chessgame_id,
+        )
+        # add the chess game
+        db.session.add(game_players)
         db.session.commit()
 
     @classmethod

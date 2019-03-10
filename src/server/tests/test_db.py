@@ -107,35 +107,36 @@ class TestChessPlayer:
             assert player.get() is not None
 
 
-# class TestChessGame:
-#     def test_create_game(self, client):
-#         with client.app_context():
-#             player1 = models.ChessPlayer(firstname="James", lastname="McConnell")
-#             player1.create()
-#             player2 = models.ChessPlayer(firstname="Paul", lastname="Morphy")
-#             player2.create()
-#             game_date = datetime.date(1849, 1, 1)
-#             with open("./data/mcconnell_morphy_1849.pgn") as fp:
-#                 game_pgn = fp.read()
+if True:
 
+    class TestChessGame:
+        def test_create_game(self, client):
+            with client.app_context():
+                player1 = models.ChessPlayer(firstname="James", lastname="McConnell")
+                player1.create()
+                player2 = models.ChessPlayer(firstname="Paul", lastname="Morphy")
+                player2.create()
+                game_date = datetime.date(1849, 1, 1)
+                with open("./data/mcconnell_morphy_1849.pgn") as fp:
+                    game_pgn = fp.read()
 
-#             game = models.ChessGame(
-#                 white=player1.chessplayer_id,
-#                 black=player2.chessplayer_id,
-#                 # date=game_date,
-#                 pgn=game_pgn,
-#             )
-#             game.create()
-#             search_results = models.ChessGame.search(
-#                 white=player1.chessplayer_id, black=player2.chessplayer_id
-#             )
-#             searched_game = search_results[0]
-#             assert searched_game is not None
-#             assert searched_game.pgn == game_pgn
+                game = models.ChessGame(
+                    # white=player1.chessplayer_id,
+                    # black=player2.chessplayer_id,
+                    # date=game_date,
+                    pgn=game_pgn
+                )
+                game.create(white=player1)
+                # search_results = models.ChessGame.search(
+                #     white=player1.chessplayer_id, black=player2.chessplayer_id
+                # )
+                # searched_game = search_results[0]
+                # assert searched_game is not None
+                # assert searched_game.pgn == game_pgn
 
-#             print(searched_game.white)
+                # print(searched_game.white)
 
-# white_player = searched_game
+                # white_player = searched_game
 
-# assert models.ChessPlayer(chessplayer_id=searched_game.white).get().firstname == player1.firstname
-# # game = models.ChessGame(date="1849", white=player2, black=player1, pgn=game_pgn, date=game_date)
+                # assert models.ChessPlayer(chessplayer_id=searched_game.white).get().firstname == player1.firstname
+                # # game = models.ChessGame(date="1849", white=player2, black=player1, pgn=game_pgn, date=game_date)
