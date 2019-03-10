@@ -118,6 +118,8 @@ class ChessPlayer(db.Model):
     )  # Some people, like Greco or N.N., might only have one name
     lastname = db.Column(db.String(64), nullable=False)
 
+    # chessgameplayers = db.relationship("ChessGamePlayers")
+
     def create(self):
         db.session.add(self)
         db.session.commit()
@@ -133,22 +135,57 @@ class ChessPlayer(db.Model):
         return self.query.filter_by(**kwargs).all()
 
 
+class ChessGamePlayers(db.Model):
+    """Association table to join games and players."""
+
+    __tablename__ = "chessgameplayers"
+
+    chessgameplayers_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    white = db.Column(db.Integer, db.ForeignKey("chessplayers.chessplayer_id"))
+    # black = db.Column(db.Integer, db.ForeignKey("chessplayers.chessplayer_id"))
+    chessgame_id = db.Column(db.Integer, db.ForeignKey("chessgames.chessgame_id"))
+
+    chessplayers = db.relationship("ChessPlayer")
+    chessgames = db.relationship("ChessGame")
+    # def create(self):
+    #     db.session.add(self)
+    #     db.session.commit()
+
+
 class ChessGame(db.Model):
     """A record of a chess game played between two players. Fischer vs. Petrossian, etc."""
 
     __tablename__ = "chessgames"
 
     chessgame_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    # event = db.Column(db.String(200), nullable=True, unique=False)
-    # site = db.Column(db.String(200), nullable=True, unique=False)
-    # date = db.Column(db.DateTime)
-    # round = db.Column(db.Integer, nullable=True)
-    white = db.Column(db.Integer, db.ForeignKey("chessplayers.chessplayer_id"))
-    black = db.Column(db.Integer, db.ForeignKey("chessplayers.chessplayer_id"))
-    # result = db.Column(db.Integer, db.ForeignKey("chessresults.chessresult_id"))
-    # pgn = db.Column(db.String(2048))
+    # chessgameplayers_id = db.Column(
+    #     db.Integer, db.ForeignKey("chessgameplayers.chessgameplayers_id")
+    # )
+    event = db.Column(db.String(200), nullable=True, unique=False)
+    site = db.Column(db.String(200), nullable=True, unique=False)
+    date = db.Column(db.DateTime)
+    round = db.Column(db.Integer, nullable=True)
 
-    def create(self):
+    white_id = db.Column(db.Integer, db.ForeignKey("chessplayer.chessplayer_id"))
+    black_id = db.Column(db.Integer, db.ForeignKey("chessplayer.chessplayer_id"))
+
+    white = db.relationship("ChessPlayer", foreign_keys=[white_id])
+    black = db.relationship("ChessPlayer", foreign_keys=[black_id])
+
+    # result = db.Column(db.Integer, db.ForeignKey("chessresults.chessresult_id"))
+    pgn = db.Column(db.String(2048))
+
+    chessgameplayers = db.relationship("ChessGamePlayers")
+
+    def create(self, white, black):
+        # Create the association table
+        # game_players = ChessGamePlayers(
+        #     white=white.chessplayer_id,
+        #     black=black.chessplayer_id,
+        #     chessgame_id=self.chessgame_id,
+        # )
+        # db.session.add(game_players)
+        # add the chess game
         db.session.add(self)
         db.session.commit()
 
