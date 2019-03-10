@@ -119,6 +119,8 @@ class ChessPlayer(db.Model):
     )  # Some people, like Greco or N.N., might only have one name
     lastname = db.Column(db.String(64), nullable=False)
 
+    games = relationship("ChessGame", secondary="game_player_link")
+
     # games = db.relationship("ChessGame", secondary="chess_game_players")
 
     # chessgameplayers = db.relationship(
@@ -140,14 +142,18 @@ class ChessPlayer(db.Model):
         return cls.query.filter_by(**kwargs).all()
 
 
-class ChessGamePlayers(db.Model):
+class ChessGamePlayerLink(db.Model):
     """Association table to join games and players."""
 
-    __tablename__ = "chess_game_players"
+    __tablename__ = "game_player_link"
 
-    chessgameplayers_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    player_id = db.Column(db.Integer, db.ForeignKey("chessplayers.chessplayer_id"))
-    game_id = db.Column(db.Integer, db.ForeignKey("chessgames.chessgame_id"))
+    gameplayer_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    player_id = db.Column(
+        db.Integer, db.ForeignKey("chessplayers.chessplayer_id"), primary_key=True
+    )
+    game_id = db.Column(
+        db.Integer, db.ForeignKey("chessgames.chessgame_id"), primary_key=True
+    )
 
     # player = db.relationship(backref=db.backref(""))
 
@@ -181,6 +187,8 @@ class ChessGame(db.Model):
     site = db.Column(db.String(200), nullable=True, unique=False)
     date = db.Column(db.DateTime)
     round = db.Column(db.Integer, nullable=True)
+
+    players = relationship(ChessPlayer, secondary="game_player_link")
 
     # white_id = db.Column(db.Integer, db.ForeignKey("chessplayer.chessplayer_id"))
     # black_id = db.Column(db.Integer, db.ForeignKey("chessplayer.chessplayer_id"))
@@ -225,8 +233,6 @@ class ChessResult(db.Model):
 
     chessresult_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     text = db.Column(db.String(10), nullable=False)
-
-
 
 
 # Some simple associative boilerplate we're dropping in
