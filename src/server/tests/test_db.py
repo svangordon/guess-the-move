@@ -1,3 +1,4 @@
+import datetime
 import os
 import tempfile
 
@@ -18,6 +19,7 @@ def client():
 
     _app = Flask(__name__)
     _app.config["SECRET_KEY"] = b"a dark and terrible secret"
+    _app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     models.db.init_app(_app)
     with _app.app_context():
         models.db.create_all()
@@ -93,3 +95,35 @@ class TestUser:
             result = user.login()
             assert "error" not in result
             assert "token" in result
+
+
+class TestChessPlayer:
+    def test_create_player(self, client):
+        with client.app_context():
+            player = models.ChessPlayer(firstname="Paul", lastname="Morphy")
+            assert player.get() is None  # Doesn't exist yet
+            player.create()
+            assert player.get() is not None
+
+
+class TestChessGame:
+    def test_create_game(self, client):
+        with client.app_context():
+            player1 = models.ChessPlayer(firstname="James", lastname="McConnell")
+            player1.create()
+            player2 = models.ChessPlayer(firstname="Paul", lastname="Morphy")
+            player2.create()
+            game_date = datetime.date(1849, 1, 1)
+            with open("./data/mcconnell_morphy_1849.pgn") as fp:
+                game_pgn = fp.read()
+            game = models.ChessGame(
+                white=player1.chessplayer_id, black=player2.chessplayer_id
+            )
+            game.create()
+            assert (
+                models.ChessGame.search(
+                    white=player1.chessplayer_id, black=player2.chessplayer_id
+                )
+                is not None
+            )
+            # game = models.ChessGame(date="1849", white=player2, black=player1, pgn=game_pgn, date=game_date)

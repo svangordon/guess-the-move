@@ -1,11 +1,10 @@
-import logging
 import unittest
 
 import chess
 import chess.pgn
 import chess.engine
 
-import guesser
+# import guesser
 from ingestor import Ingestor
 
 

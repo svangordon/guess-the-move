@@ -51,7 +51,6 @@ class User(db.Model):
         if self.exists:
             raise ValueError("Trying to add duplicate user.")
 
-        print("=============from================", self.password)
         self.password = self._hashed_password
         db.session.add(self)
         db.session.commit()
@@ -119,6 +118,20 @@ class ChessPlayer(db.Model):
     )  # Some people, like Greco or N.N., might only have one name
     lastname = db.Column(db.String(64), nullable=False)
 
+    def create(self):
+        db.session.add(self)
+        db.session.commit()
+
+    # @classmethod
+    def get(self):
+        return self.query.filter_by(
+            firstname=self.firstname, lastname=self.lastname
+        ).first()
+
+    @classmethod
+    def search(cls, **kwargs):
+        return self.query.filter_by(**kwargs).all()
+
 
 class ChessGame(db.Model):
     """A record of a chess game played between two players. Fischer vs. Petrossian, etc."""
@@ -126,13 +139,22 @@ class ChessGame(db.Model):
     __tablename__ = "chessgames"
 
     chessgame_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    event = db.Column(db.String(200), nullable=True, unique=False)
-    site = db.Column(db.String(200), nullable=True, unique=False)
-    date = db.Column(db.DateTime)
-    round = db.Column(db.Integer)
+    # event = db.Column(db.String(200), nullable=True, unique=False)
+    # site = db.Column(db.String(200), nullable=True, unique=False)
+    # date = db.Column(db.DateTime)
+    # round = db.Column(db.Integer, nullable=True)
     white = db.Column(db.Integer, db.ForeignKey("chessplayers.chessplayer_id"))
     black = db.Column(db.Integer, db.ForeignKey("chessplayers.chessplayer_id"))
-    result = db.Column(db.Integer, db.ForeignKey("chessresults.chessresult_id"))
+    # result = db.Column(db.Integer, db.ForeignKey("chessresults.chessresult_id"))
+    # pgn = db.Column(db.String(2048))
+
+    def create(self):
+        db.session.add(self)
+        db.session.commit()
+
+    @classmethod
+    def search(cls, **kwargs):
+        return cls.query.filter_by(**kwargs).all()
 
 
 class ChessResult(db.Model):
